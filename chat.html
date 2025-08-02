@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat Amigo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .chat-header {
+      background: #1877f2;
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    #chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: white;
+    }
+
+    .mensagem {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .mensagem img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .mensagem .conteudo {
+      background: #e4e6eb;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 60%;
+    }
+
+    #form-mensagem {
+      display: flex;
+      padding: 10px;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+
+    #form-mensagem input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 16px;
+    }
+
+    #form-mensagem button {
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .private-btn {
+      margin-top: 5px;
+      color: #1877f2;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .private-btn:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-header">Chat Amigo</div>
+
+  <div id="chat-box"></div>
+
+  <form id="form-mensagem">
+    <input type="text" id="mensagem" placeholder="Digite uma mensagem..." required />
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    // Verificação de aprovação
+    const userId = sessionStorage.getItem('login_usuario');
+    const userNome = sessionStorage.getItem('login_nome');
+    const userFoto = sessionStorage.getItem('perfil_foto') || 'https://via.placeholder.com/40';
+    const aprovado = localStorage.getItem('aprovado_' + userId) === 'true';
+
+    if (!aprovado) {
+      alert("Seu perfil ainda não foi aprovado pelo administrador.");
+      window.location.href = "login.html";
+    }
+
+    const chatBox = document.getElementById('chat-box');
+    const form = document.getElementById('form-mensagem');
+    const input = document.getElementById('mensagem');
+
+    // Carregar mensagens salvas
+    const mensagens = JSON.parse(localStorage.getItem('mensagens_chat')) || [];
+
+    function renderizarMensagens() {
+      chatBox.innerHTML = '';
+      mensagens.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'mensagem';
+
+        div.innerHTML = `
+          <img src="${msg.foto}" alt="${msg.nome}" onclick="abrirPrivado('${msg.nome}')">
+          <div>
+            <div class="conteudo">${msg.texto}</div>
+            <div class="private-btn" onclick="abrirPrivado('${msg.nome}')">Conversar com ${msg.nome}</div>
+          </div>
+        `;
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const texto = input.value.trim();
+      if (texto) {
+        mensagens.push({
+          nome: userNome,
+          usuario: userId,
+          texto: texto,
+          foto: userFoto
+        });
+        localStorage.setItem('mensagens_chat', JSON.stringify(mensagens));
+        input.value = '';
+        renderizarMensagens();
+      }
+    });
+
+    function abrirPrivado(nome) {
+      alert("Iniciando conversa privada com " + nome + " (função em desenvolvimento)");
+      // Aqui futuramente redirecionaremos para `chat-privado.html?com=nome`
+    }
+
+    renderizarMensagens();
+  </script>
+</body>
+    </html>
