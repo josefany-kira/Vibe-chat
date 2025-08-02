@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel de Aprovação</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .perfil-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .perfil-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .perfil-info img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 20px;
+    }
+
+    .perfil-info div {
+      line-height: 1.4;
+    }
+
+    .perfil-info div strong {
+      font-size: 18px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      font-size: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: default;
+    }
+
+    .aprovado {
+      color: green;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Solicitações de Acesso</h1>
+
+  <div id="listaPerfis">
+    <!-- Perfis simulados serão adicionados aqui -->
+  </div>
+
+  <script>
+    // Dados simulados de perfis enviados (você pode gerar isso de um JSON no futuro)
+    const perfis = [
+      {
+        id: 'user01',
+        nome: "Ana Clara",
+        usuario: "anaclara22",
+        email: "ana@example.com",
+        experiencia: "Gosto de conversar sobre tecnologia e arte.",
+        foto: "https://via.placeholder.com/60"
+      },
+      {
+        id: 'user02',
+        nome: "Lucas Menezes",
+        usuario: "lucasm",
+        email: "lucas@example.com",
+        experiencia: "Estudo programação e adoro café!",
+        foto: "https://via.placeholder.com/60"
+      }
+    ];
+
+    const lista = document.getElementById('listaPerfis');
+
+    perfis.forEach(perfil => {
+      const aprovado = localStorage.getItem("aprovado_" + perfil.id) === "true";
+
+      const card = document.createElement('div');
+      card.className = 'perfil-card';
+
+      card.innerHTML = `
+        <div class="perfil-info">
+          <img src="${perfil.foto}" alt="Foto de ${perfil.nome}" />
+          <div>
+            <strong>${perfil.nome}</strong><br/>
+            Usuário: ${perfil.usuario}<br/>
+            E-mail: ${perfil.email}<br/>
+            <em>${perfil.experiencia}</em>
+            ${aprovado ? '<div class="aprovado">Aprovado</div>' : ''}
+          </div>
+        </div>
+        <button ${aprovado ? 'disabled' : ''} onclick="aprovarUsuario('${perfil.id}')">
+          ${aprovado ? 'Já Aprovado' : 'Aprovar'}
+        </button>
+      `;
+
+      lista.appendChild(card);
+    });
+
+    function aprovarUsuario(id) {
+      localStorage.setItem("aprovado_" + id, "true");
+      alert("Usuário aprovado!");
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
