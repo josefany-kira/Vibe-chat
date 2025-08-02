@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Perfil - Chat Amigo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #155db8;
+    }
+
+    .preview {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .preview img {
+      max-width: 60px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .success {
+      text-align: center;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Criar Seu Perfil</h2>
+    <form action="https://formsubmit.co/josefanykira@gmail.com" method="POST" enctype="multipart/form-data" id="perfilForm">
+      <input type="hidden" name="_subject" value="Novo perfil no Chat Amigo!">
+      <input type="hidden" name="_captcha" value="false">
+
+      <input type="text" name="nome" id="nome" placeholder="Nome completo" readonly />
+      <input type="text" name="usuario" id="usuario" placeholder="Nome de usuário" readonly />
+      <input type="email" name="email" id="email" placeholder="E-mail" readonly />
+
+      <textarea name="experiencia" placeholder="Fale um pouco sobre sua experiência..." required></textarea>
+
+      <label>Foto de perfil:</label>
+      <input type="file" name="foto" accept="image/*" required />
+
+      <button type="submit">Enviar para aprovação</button>
+    </form>
+
+    <div class="success" id="mensagem" style="display: none;">
+      Perfil enviado com sucesso! Aguarde aprovação do administrador.
+    </div>
+  </div>
+
+  <script>
+    // Preencher dados salvos do login
+    document.getElementById('nome').value = sessionStorage.getItem('login_nome') || "";
+    document.getElementById('usuario').value = sessionStorage.getItem('login_usuario') || "";
+    document.getElementById('email').value = sessionStorage.getItem('login_email') || "";
+
+    // Mostrar mensagem de sucesso após envio
+    const form = document.getElementById('perfilForm');
+    form.addEventListener('submit', function () {
+      setTimeout(() => {
+        form.style.display = 'none';
+        document.getElementById('mensagem').style.display = 'block';
+      }, 500);
+    });
+  </script>
+</body>
+        </html>
