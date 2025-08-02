@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Entrar - Chat Amigo</title>
+  <title>Admin - Veb Chat</title>
   <style>
     * {
       box-sizing: border-box;
@@ -16,139 +16,115 @@
       background-color: #f0f2f5;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
+      padding: 30px;
     }
 
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: 1000px;
-      width: 100%;
-      padding: 20px;
-    }
-
-    .content {
-      display: flex;
-      width: 100%;
+    .container {
       background: white;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      overflow: hidden;
       max-width: 900px;
-    }
-
-    .left-side {
-      flex: 1;
-      background-color: #1877f2;
-      color: white;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .left-side h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .left-side p {
-      font-size: 18px;
-    }
-
-    .right-side {
-      flex: 1;
+      width: 100%;
       padding: 40px;
     }
 
-    .right-side h2 {
+    h1 {
+      color: #1877f2;
       margin-bottom: 20px;
-      font-size: 26px;
-      color: #333;
+      font-size: 28px;
       text-align: center;
     }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
+    .user-card {
       border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #1877f2;
-      border: none;
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-info p {
+      margin: 4px 0;
+    }
+
+    .approve-btn {
+      background-color: #28a745;
       color: white;
-      font-size: 16px;
-      font-weight: bold;
+      border: none;
+      padding: 10px 18px;
       border-radius: 6px;
+      font-size: 14px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #155db8;
+    .approve-btn:hover {
+      background-color: #218838;
     }
 
-    @media (max-width: 768px) {
-      .content {
-        flex-direction: column;
-      }
-
-      .left-side, .right-side {
-        padding: 20px;
-      }
-
-      .left-side h1 {
-        font-size: 28px;
-      }
+    .empty-msg {
+      text-align: center;
+      font-size: 18px;
+      color: #777;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <div class="content">
-      <div class="left-side">
-        <h1>Chat Amigo</h1>
-        <p>Conecte-se com amigos e converse sobre tudo num único lugar.</p>
-      </div>
-      <div class="right-side">
-        <h2>Entrar no Chat</h2>
-        <form id="loginForm">
-          <input type="text" id="nome" placeholder="Seu nome completo" required />
-          <input type="text" id="usuario" placeholder="Nome de usuário" required />
-          <input type="email" id="email" placeholder="Seu e-mail" required />
-          <button type="submit">Continuar</button>
-        </form>
-      </div>
+  <div class="container">
+    <h1>Painel do Administrador</h1>
+    <div id="userList">
+      <!-- Usuários pendentes serão listados aqui -->
     </div>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    const users = JSON.parse(localStorage.getItem('perfisPendentes')) || [];
 
-      const nome = document.getElementById('nome').value.trim();
-      const usuario = document.getElementById('usuario').value.trim();
-      const email = document.getElementById('email').value.trim();
+    function aprovarUsuario(index) {
+      const aprovados = JSON.parse(localStorage.getItem('perfisAprovados')) || [];
+      aprovados.push(users[index]);
+      localStorage.setItem('perfisAprovados', JSON.stringify(aprovados));
+      users.splice(index, 1);
+      localStorage.setItem('perfisPendentes', JSON.stringify(users));
+      alert("Usuário aprovado com sucesso!");
+      renderUsuarios();
+    }
 
-      if (!nome || !usuario || !email) {
-        alert("Preencha todos os campos.");
+    function renderUsuarios() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+
+      if (users.length === 0) {
+        userList.innerHTML = '<p class="empty-msg">Nenhum perfil pendente de aprovação.</p>';
         return;
       }
 
-      sessionStorage.setItem('login_nome', nome);
-      sessionStorage.setItem('login_usuario', usuario);
-      sessionStorage.setItem('login_email', email);
+      users.forEach((user, index) => {
+        const div = document.createElement('div');
+        div.className = 'user-card';
+        div.innerHTML = `
+          <div class="user-info">
+            <p><strong>Nome:</strong> ${user.nome}</p>
+            <p><strong>Usuário:</strong> ${user.usuario}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Experiência:</strong> ${user.experiencia}</p>
+          </div>
+          <button class="approve-btn" onclick="aprovarUsuario(${index})">Aprovar</button>
+        `;
+        userList.appendChild(div);
+      });
+    }
 
-      window.location.href = 'perfil.html';
-    });
+    renderUsuarios();
   </script>
 </body>
 </html>
