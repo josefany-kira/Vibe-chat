@@ -3,133 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel de Aprovação</title>
+  <title>Admin - Veb Chat</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
       padding: 30px;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 900px;
+      width: 100%;
+      padding: 40px;
     }
 
-    .perfil-card {
-      background: #fff;
-      border-radius: 10px;
+    h1 {
+      color: #1877f2;
+      margin-bottom: 20px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .user-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
       margin-bottom: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .perfil-info {
+    .user-info {
       display: flex;
-      align-items: center;
+      flex-direction: column;
     }
 
-    .perfil-info img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      margin-right: 20px;
+    .user-info p {
+      margin: 4px 0;
     }
 
-    .perfil-info div {
-      line-height: 1.4;
-    }
-
-    .perfil-info div strong {
-      font-size: 18px;
-    }
-
-    button {
-      padding: 10px 16px;
-      border: none;
+    .approve-btn {
       background-color: #28a745;
       color: white;
-      font-size: 15px;
+      border: none;
+      padding: 10px 18px;
       border-radius: 6px;
+      font-size: 14px;
       cursor: pointer;
     }
 
-    button:disabled {
-      background-color: #ccc;
-      cursor: default;
+    .approve-btn:hover {
+      background-color: #218838;
     }
 
-    .aprovado {
-      color: green;
-      font-weight: bold;
-      margin-top: 5px;
+    .empty-msg {
+      text-align: center;
+      font-size: 18px;
+      color: #777;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <h1>Solicitações de Acesso</h1>
-
-  <div id="listaPerfis">
-    <!-- Perfis simulados serão adicionados aqui -->
+  <div class="container">
+    <h1>Painel do Administrador</h1>
+    <div id="userList">
+      <!-- Usuários pendentes serão listados aqui -->
+    </div>
   </div>
 
   <script>
-    // Dados simulados de perfis enviados (você pode gerar isso de um JSON no futuro)
-    const perfis = [
-      {
-        id: 'user01',
-        nome: "Ana Clara",
-        usuario: "anaclara22",
-        email: "ana@example.com",
-        experiencia: "Gosto de conversar sobre tecnologia e arte.",
-        foto: "https://via.placeholder.com/60"
-      },
-      {
-        id: 'user02',
-        nome: "Lucas Menezes",
-        usuario: "lucasm",
-        email: "lucas@example.com",
-        experiencia: "Estudo programação e adoro café!",
-        foto: "https://via.placeholder.com/60"
-      }
-    ];
+    const users = JSON.parse(localStorage.getItem('perfisPendentes')) || [];
 
-    const lista = document.getElementById('listaPerfis');
-
-    perfis.forEach(perfil => {
-      const aprovado = localStorage.getItem("aprovado_" + perfil.id) === "true";
-
-      const card = document.createElement('div');
-      card.className = 'perfil-card';
-
-      card.innerHTML = `
-        <div class="perfil-info">
-          <img src="${perfil.foto}" alt="Foto de ${perfil.nome}" />
-          <div>
-            <strong>${perfil.nome}</strong><br/>
-            Usuário: ${perfil.usuario}<br/>
-            E-mail: ${perfil.email}<br/>
-            <em>${perfil.experiencia}</em>
-            ${aprovado ? '<div class="aprovado">Aprovado</div>' : ''}
-          </div>
-        </div>
-        <button ${aprovado ? 'disabled' : ''} onclick="aprovarUsuario('${perfil.id}')">
-          ${aprovado ? 'Já Aprovado' : 'Aprovar'}
-        </button>
-      `;
-
-      lista.appendChild(card);
-    });
-
-    function aprovarUsuario(id) {
-      localStorage.setItem("aprovado_" + id, "true");
-      alert("Usuário aprovado!");
-      window.location.reload();
+    function aprovarUsuario(index) {
+      const aprovados = JSON.parse(localStorage.getItem('perfisAprovados')) || [];
+      aprovados.push(users[index]);
+      localStorage.setItem('perfisAprovados', JSON.stringify(aprovados));
+      users.splice(index, 1);
+      localStorage.setItem('perfisPendentes', JSON.stringify(users));
+      alert("Usuário aprovado com sucesso!");
+      renderUsuarios();
     }
+
+    function renderUsuarios() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+
+      if (users.length === 0) {
+        userList.innerHTML = '<p class="empty-msg">Nenhum perfil pendente de aprovação.</p>';
+        return;
+      }
+
+      users.forEach((user, index) => {
+        const div = document.createElement('div');
+        div.className = 'user-card';
+        div.innerHTML = `
+          <div class="user-info">
+            <p><strong>Nome:</strong> ${user.nome}</p>
+            <p><strong>Usuário:</strong> ${user.usuario}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Experiência:</strong> ${user.experiencia}</p>
+          </div>
+          <button class="approve-btn" onclick="aprovarUsuario(${index})">Aprovar</button>
+        `;
+        userList.appendChild(div);
+      });
+    }
+
+    renderUsuarios();
   </script>
 </body>
 </html>
